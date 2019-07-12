@@ -16,7 +16,7 @@ fn main() {
     router.post("/gcd", post_gcd, "gcd");
 
     println!("Сервер запущен на http://localhost:3000...");
-    Iron::new(get_form).http("localhost:3000").unwrap();
+    Iron::new(router).http("localhost:3000").unwrap();
 }
 
 fn get_form(_request: &mut Request) -> IronResult<Response> {
@@ -27,9 +27,9 @@ fn get_form(_request: &mut Request) -> IronResult<Response> {
     response.set_mut(r#"
         <title>GCD Calculator</title>
         <form action="/gcd" method="post">
-        <input type="text" name="n"/>
-        <input type="text" name="n"/>
-        <button type="submit">Compute GCD</button>
+          <input type="text" name="n"/>
+          <input type="text" name="n"/>
+          <button type="submit">Compute GCD</button>
         </form>
     "#);
 
@@ -43,6 +43,7 @@ fn post_gcd(request: &mut Request) -> IronResult<Response> {
         Err(e) => {
             response.set_mut(status::BadRequest);
             response.set_mut(format!("Не удалось распознать данные: {:?}\n", e));
+            return Ok(response);
         }
         Ok(map) => map
     };
@@ -89,8 +90,8 @@ fn gcd(mut n: u64, mut m: u64) -> u64 {
             let t = m;
             m = n;
             n = t;
-        } 
+        }
         m = m % n;
-    } 
+    }
     n
 }
